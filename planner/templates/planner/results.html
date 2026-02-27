@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+{% load planner_extras %}
+
+{% block title %}Plan {{ plan.id }} | TriPPlanner{% endblock %}
+
+{% block content %}
+<section class="mb-6 rounded-3xl border border-ink/10 bg-white p-6 shadow-sm">
+  <div class="flex flex-wrap items-center justify-between gap-4">
+    <div>
+      <h1 class="text-3xl font-extrabold">Airport-to-Airport Links-Only Planner</h1>
+      <p class="mt-1 text-sm text-ink/70">
+        {{ plan.origin_code }} to
+        {% if plan.destination_iata %}
+          {{ plan.destination_iata }}
+        {% elif plan.destination_iatas %}
+          {{ plan.destination_iatas|join:", " }}
+        {% else %}
+          selected destinations
+        {% endif %}
+        | Adults {{ plan.adults|default:plan.travelers }}
+        | Children {{ plan.children|default:0 }}
+        | No booking on TriPPlanner
+      </p>
+    </div>
+    <div class="flex flex-wrap gap-2">
+      <a href="{% url 'planner:wizard' %}" class="rounded-xl bg-ink px-4 py-2 text-sm font-semibold text-white hover:bg-ocean">New search</a>
+    </div>
+  </div>
+</section>
+
+{% if not providers.travelpayouts_enabled or not providers.links_only_enabled or not providers.fx_enabled %}
+
+  <div class="mb-6 rounded-2xl border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900">
+    Travelpayouts links-only mode is not fully configured. Fallback estimates still run, but data freshness and confidence can decrease.
+  </div>
+{% endif %}
+
+<div class="space-y-4">
+  <input type="hidden" id="sort-input" name="sort" value="{{ sort_mode|default:'best_value' }}">
+  {% if read_only %}
+    <input type="hidden" name="token" value="{{ plan.public_token }}">
+  {% endif %}
+
+  <div
+    id="progress-panel"
+    hx-get="{% url 'planner:progress-partial' plan.id %}{% if read_only %}?token={{ plan.public_token }}{% endif %}"
+    hx-trigger="load, every 2s"
+    hx-target="this"
+    hx-swap="outerHTML"
+  ></div>
+
+  <div
+    id="package-cards"
+    hx-get="{% url 'planner:packages-partial' plan.id %}{% if read_only %}?token={{ plan.public_token }}{% endif %}"
+    hx-trigger="load, every 4s"
+    hx-target="this"
+    hx-swap="innerHTML"
+    hx-include="[name='sort'], [name='token']"
+  ></div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+  <script>
+    (function () {
+      function getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) {
+          return parts.pop().split(';').shift();
+        }
+        return '';
+      }
+
+      const csrfToken = getCookie('csrftoken');
+
+      document.body.addEventListener('click', function (event) {
+        const link = event.target.closest('.track-click');
+        if (!link) return;
+        fetch('/api/click', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken
+          },
+          body: JSON.stringify({
+            provider: link.dataset.provider || 'unknown',
+            link_type: link.dataset.linkType || 'other',
+            destination: link.dataset.destination || '',
+            correlation_id: link.dataset.correlationId || '',
+            plan_id: link.dataset.planId || null,
+            package_id: link.dataset.packageId || null,
+            outbound_url: link.href
+          }),
+          keepalive: true
+        }).catch(() => {});
+      });
+
+      let leafletLoader = null;
+      function ensureLeaflet() {
+        if (window.L) return Promise.resolve();
+        if (leafletLoader) return leafletLoader;
+        leafletLoader = new Promise((resolve, reject) => {
+          const style = document.createElement('link');
+          style.rel = 'stylesheet';
+          style.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+          document.head.appendChild(style);
+
+          const script = document.createElement('script');
+          script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+          script.onload = resolve;
+          script.onerror = reject;
+          document.head.appendChild(script);
+        });
+        return leafletLoader;
+      }
+
+      function initMap(container) {
+        if (container.dataset.ready === '1') return;
+        ensureLeaflet().then(() => {
+          const hotelLat = parseFloat(container.dataset.hotelLat);
+          const hotelLng = parseFloat(container.dataset.hotelLng);
+          const cityLat = parseFloat(container.dataset.cityLat);
+          const cityLng = parseFloat(container.dataset.cityLng);
+          const map = L.map(container).setView([hotelLat, hotelLng], 12);
+          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 18,
+            attribution: '&copy; OpenStreetMap contributors'
+          }).addTo(map);
+          L.marker([hotelLat, hotelLng]).addTo(map).bindPopup(container.dataset.hotelName || 'Hotel');
+          L.marker([cityLat, cityLng]).addTo(map).bindPopup(container.dataset.cityName || 'City center');
+          const bounds = L.latLngBounds([[hotelLat, hotelLng], [cityLat, cityLng]]);
+          map.fitBounds(bounds.pad(0.3));
+          container.dataset.ready = '1';
+        }).catch(() => {});
+      }
+
+      document.body.addEventListener('toggle', function (event) {
+        const details = event.target.closest('.map-toggle');
+        if (!details || !details.open) return;
+        const container = details.querySelector('.leaflet-map');
+        if (container) initMap(container);
+      }, true);
+    })();
+  </script>
+{% endblock %}

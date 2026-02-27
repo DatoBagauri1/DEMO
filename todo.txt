@@ -1,0 +1,3 @@
+remove save from profile
+
+share link remove from results page

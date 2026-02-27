@@ -1,0 +1,5 @@
+migraciebi gaushvi:))
+
+celery -A trip_pilot worker --loglevel=info --pool=solo --concurrency=1 powershelshi
+
+meore powershelis terminalshi requirementebi daainstalire da runserveri :)))

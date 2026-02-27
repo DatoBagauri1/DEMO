@@ -1,0 +1,142 @@
+/* TriPPlanner Design Tokens
+   Centralized variables for color, typography, spacing, depth, motion, and glass surfaces. */
+:root,
+[data-theme="trip-default"] {
+  /* Typography */
+  --tp-font-display: "Outfit", "Segoe UI", "Helvetica Neue", sans-serif;
+  --tp-font-body: "Manrope", "Segoe UI", "Helvetica Neue", sans-serif;
+
+  --tp-text-xs: 0.75rem;
+  --tp-text-sm: 0.875rem;
+  --tp-text-md: 1rem;
+  --tp-text-lg: 1.125rem;
+  --tp-text-xl: clamp(1.25rem, 1.1rem + 0.6vw, 1.5rem);
+  --tp-text-2xl: clamp(1.55rem, 1.3rem + 1vw, 2rem);
+  --tp-text-3xl: clamp(2rem, 1.7rem + 1.4vw, 2.85rem);
+
+  --tp-leading-tight: 1.15;
+  --tp-leading-normal: 1.45;
+  --tp-leading-loose: 1.65;
+
+  /* Spacing */
+  --tp-space-1: 0.25rem;
+  --tp-space-2: 0.5rem;
+  --tp-space-3: 0.75rem;
+  --tp-space-4: 1rem;
+  --tp-space-5: 1.25rem;
+  --tp-space-6: 1.5rem;
+  --tp-space-7: 1.75rem;
+  --tp-space-8: 2rem;
+  --tp-space-10: 2.5rem;
+  --tp-space-12: 3rem;
+  --tp-space-16: 4rem;
+
+  /* Radius */
+  --tp-radius-sm: 0.5rem;
+  --tp-radius-md: 0.75rem;
+  --tp-radius-lg: 1rem;
+  --tp-radius-xl: 1.125rem;
+  --tp-radius-2xl: 1.45rem;
+  --tp-radius-3xl: 1.95rem;
+  --tp-radius-pill: 9999px;
+
+  /* Motion */
+  --tp-duration-fast: 160ms;
+  --tp-duration-normal: 260ms;
+  --tp-duration-slow: 420ms;
+  --tp-ease-standard: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --tp-ease-emphasis: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Core colors */
+  --tp-color-ink: #102338;
+  --tp-color-ink-rgb: 16 35 56;
+  --tp-color-ocean: #1e4967;
+  --tp-color-ocean-rgb: 30 73 103;
+  --tp-color-mint: #5fa8a6;
+  --tp-color-mint-rgb: 95 168 166;
+  --tp-color-sky: #cae9ff;
+  --tp-color-sky-rgb: 202 233 255;
+  --tp-color-sand: #fff7e8;
+  --tp-color-sand-rgb: 255 247 232;
+  --tp-color-surface: #ffffff;
+  --tp-color-surface-rgb: 255 255 255;
+  --tp-color-bg: #eef5ff;
+  --tp-color-bg-rgb: 238 245 255;
+  --tp-color-muted: #5c6d80;
+  --tp-color-muted-rgb: 92 109 128;
+
+  --tp-color-success: #2f8f72;
+  --tp-color-success-rgb: 47 143 114;
+  --tp-color-warning: #aa7334;
+  --tp-color-warning-rgb: 170 115 52;
+  --tp-color-danger: #b2506b;
+  --tp-color-danger-rgb: 178 80 107;
+  --tp-color-info: #3c7397;
+  --tp-color-info-rgb: 60 115 151;
+  --tp-color-on-brand: #f8fcff;
+  --tp-color-on-brand-rgb: 248 252 255;
+
+  /* Visual treatments */
+  --tp-color-border: rgb(var(--tp-color-ink-rgb) / 0.12);
+  --tp-color-border-strong: rgb(var(--tp-color-ink-rgb) / 0.2);
+  --tp-color-border-soft: rgb(var(--tp-color-surface-rgb) / 0.72);
+
+  --tp-gradient-canvas:
+    radial-gradient(circle at 9% 10%, rgb(var(--tp-color-surface-rgb) / 0.95) 0%, rgb(var(--tp-color-sky-rgb) / 0.43) 24%, transparent 54%),
+    radial-gradient(circle at 88% 8%, rgb(var(--tp-color-mint-rgb) / 0.22) 0%, transparent 45%),
+    linear-gradient(145deg, rgb(var(--tp-color-sand-rgb) / 0.95) 0%, rgb(var(--tp-color-sky-rgb) / 0.34) 54%, rgb(var(--tp-color-mint-rgb) / 0.25) 100%);
+  --tp-gradient-surface:
+    linear-gradient(180deg, rgb(var(--tp-color-surface-rgb) / 0.96), rgb(var(--tp-color-surface-rgb) / 0.88));
+  --tp-gradient-primary:
+    linear-gradient(130deg, rgb(var(--tp-color-ocean-rgb)) 0%, rgb(var(--tp-color-ink-rgb)) 100%);
+  --tp-gradient-soft:
+    linear-gradient(160deg, rgb(var(--tp-color-sky-rgb) / 0.34), rgb(var(--tp-color-mint-rgb) / 0.26));
+
+  /* Glass surfaces */
+  --tp-glass-bg: rgb(var(--tp-color-surface-rgb) / 0.72);
+  --tp-glass-bg-strong: rgb(var(--tp-color-surface-rgb) / 0.84);
+  --tp-glass-border: rgb(var(--tp-color-surface-rgb) / 0.5);
+  --tp-glass-highlight: inset 0 1px 0 rgb(var(--tp-color-surface-rgb) / 0.78);
+  --tp-glass-blur: 14px;
+
+  /* Elevation */
+  --tp-shadow-xs: 0 4px 14px rgb(var(--tp-color-ink-rgb) / 0.08);
+  --tp-shadow-sm: 0 10px 24px rgb(var(--tp-color-ink-rgb) / 0.1);
+  --tp-shadow-md: 0 16px 32px rgb(var(--tp-color-ink-rgb) / 0.14);
+  --tp-shadow-lg: 0 22px 46px rgb(var(--tp-color-ink-rgb) / 0.17);
+  --tp-shadow-hover: 0 26px 52px rgb(var(--tp-color-ink-rgb) / 0.2);
+
+  /* Focus and scrollbars */
+  --tp-focus-ring: rgb(var(--tp-color-mint-rgb) / 0.5);
+  --tp-scrollbar-track: rgb(var(--tp-color-surface-rgb) / 0.6);
+  --tp-scrollbar-thumb: rgb(var(--tp-color-ocean-rgb) / 0.45);
+  --tp-scrollbar-thumb-hover: rgb(var(--tp-color-ocean-rgb) / 0.62);
+
+  /* Legacy aliases used by existing classes/scripts */
+  --ink: var(--tp-color-ink);
+  --ocean: var(--tp-color-ocean);
+  --mint: var(--tp-color-mint);
+  --sky: var(--tp-color-sky);
+  --sand: var(--tp-color-sand);
+}
+
+[data-theme="trip-dusk"] {
+  --tp-color-ink: #11253a;
+  --tp-color-ink-rgb: 17 37 58;
+  --tp-color-ocean: #2f6b92;
+  --tp-color-ocean-rgb: 47 107 146;
+  --tp-color-mint: #68b7a9;
+  --tp-color-mint-rgb: 104 183 169;
+  --tp-color-sky: #d5ecff;
+  --tp-color-sky-rgb: 213 236 255;
+  --tp-color-bg: #edf4ff;
+  --tp-color-bg-rgb: 237 244 255;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --tp-duration-fast: 1ms;
+    --tp-duration-normal: 1ms;
+    --tp-duration-slow: 1ms;
+  }
+}

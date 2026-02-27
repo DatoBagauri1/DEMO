@@ -1,0 +1,146 @@
+@import url('./theme.css');
+@import url('./layout.css');
+@import url('./components.css');
+@import url('./utilities.css');
+
+/* TriPPlanner CSS entrypoint. Keep all visual imports and app-level overrides here. */
+
+.track-click {
+  transition:
+    transform var(--tp-duration-fast) var(--tp-ease-emphasis),
+    box-shadow var(--tp-duration-fast) var(--tp-ease-standard);
+}
+
+.track-click:hover {
+  transform: translateY(-1px);
+}
+
+.leaflet-map {
+  z-index: 1;
+}
+
+/* Wizard and entity-card helper styles */
+#origin-suggest,
+#destination-suggest {
+  max-height: 16rem;
+  overflow-y: auto;
+}
+
+#destination-chip-list:empty::before {
+  content: "No destinations added yet";
+  color: rgb(var(--tp-color-ink-rgb) / 0.55);
+  font-size: var(--tp-text-xs);
+}
+
+.tp-button img {
+  flex: 0 0 auto;
+}
+
+.tp-card textarea,
+.tp-card input,
+.tp-card select {
+  font-family: var(--tp-font-body);
+}
+
+@media (max-width: 640px) {
+  .tp-button {
+    padding: 0.56rem 0.82rem;
+  }
+}
+
+[x-cloak] {
+  display: none !important;
+}
+
+.tp-main-shell,
+.tp-main-shell * {
+  min-width: 0;
+}
+
+.tp-nav-links a,
+.tp-nav-links button {
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .tp-nav-links a,
+  .tp-nav-links button {
+    width: auto;
+  }
+}
+
+@media (max-width: 767px) {
+  .tp-nav-links {
+    padding-top: 0.25rem;
+  }
+
+  .tp-nav-toggle {
+    min-height: 2.5rem;
+    min-width: 4.5rem;
+  }
+
+  .wizard-stepper {
+    grid-template-columns: 1fr;
+  }
+
+  .wizard-form section[class*="grid"] {
+    grid-template-columns: 1fr;
+  }
+
+  .wizard-footer {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+
+  .wizard-next-submit {
+    display: grid;
+    grid-template-columns: 1fr;
+    width: 100%;
+  }
+
+  .wizard-footer .tp-button,
+  .wizard-footer button {
+    width: 100%;
+  }
+
+  .package-action-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .package-action-grid > * {
+    width: 100%;
+  }
+
+  .package-action-grid .tp-button,
+  .package-action-grid a,
+  .package-action-grid span {
+    width: 100%;
+  }
+
+  .profile-form-actions {
+    justify-content: stretch;
+  }
+
+  .profile-form-actions button {
+    width: 100%;
+  }
+
+  .profile-place-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .profile-place-actions a,
+  .profile-place-actions button,
+  .profile-place-actions span {
+    width: 100%;
+  }
+
+  .why-page .why-cta {
+    width: 100%;
+  }
+
+  .why-page .why-gallery {
+    grid-template-columns: 1fr 1fr;
+  }
+}

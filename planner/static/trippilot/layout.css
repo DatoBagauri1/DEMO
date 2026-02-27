@@ -1,0 +1,166 @@
+/* TriPPlanner Layout Primitives and global surface behavior */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+body.tp-app {
+  margin: 0;
+  min-height: 100vh;
+  position: relative;
+  isolation: isolate;
+  color: var(--tp-color-ink);
+  font-family: var(--tp-font-body);
+  line-height: var(--tp-leading-normal);
+  background: var(--tp-gradient-canvas);
+  background-attachment: fixed;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body.tp-app::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 14% 20%, rgb(var(--tp-color-surface-rgb) / 0.56), transparent 46%),
+    radial-gradient(circle at 78% 0%, rgb(var(--tp-color-mint-rgb) / 0.16), transparent 38%);
+}
+
+body.tp-app > .min-h-screen {
+  background: transparent;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.display-font {
+  margin-top: 0;
+  font-family: var(--tp-font-display);
+  line-height: var(--tp-leading-tight);
+  letter-spacing: -0.015em;
+}
+
+h1 {
+  font-size: var(--tp-text-3xl);
+}
+
+h2 {
+  font-size: var(--tp-text-2xl);
+}
+
+h3 {
+  font-size: var(--tp-text-xl);
+}
+
+p {
+  margin-top: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.24em;
+}
+
+.tp-header,
+body.tp-app header {
+  border-bottom: 1px solid var(--tp-color-border);
+  background: var(--tp-glass-bg-strong);
+  backdrop-filter: blur(var(--tp-glass-blur));
+  -webkit-backdrop-filter: blur(var(--tp-glass-blur));
+}
+
+body.tp-app nav {
+  position: relative;
+}
+
+body.tp-app nav::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    rgb(var(--tp-color-surface-rgb) / 0),
+    rgb(var(--tp-color-surface-rgb) / 0.72),
+    rgb(var(--tp-color-surface-rgb) / 0)
+  );
+}
+
+body.tp-app main {
+  padding-top: clamp(var(--tp-space-6), 1.6vw + 1rem, var(--tp-space-10));
+  padding-bottom: clamp(var(--tp-space-8), 2vw + 1rem, var(--tp-space-12));
+}
+
+body.tp-app main > * + * {
+  margin-top: var(--tp-space-4);
+}
+
+.tp-section {
+  display: block;
+  margin-bottom: var(--tp-space-6);
+}
+
+footer {
+  border-top: 1px solid var(--tp-color-border);
+  background: var(--tp-glass-bg);
+  backdrop-filter: blur(calc(var(--tp-glass-blur) * 0.85));
+  -webkit-backdrop-filter: blur(calc(var(--tp-glass-blur) * 0.85));
+}
+
+::selection {
+  color: var(--tp-color-on-brand);
+  background: rgb(var(--tp-color-ocean-rgb) / 0.7);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--tp-scrollbar-thumb) var(--tp-scrollbar-track);
+}
+
+*::-webkit-scrollbar {
+  width: 0.65rem;
+  height: 0.65rem;
+}
+
+*::-webkit-scrollbar-track {
+  border-radius: var(--tp-radius-pill);
+  background: var(--tp-scrollbar-track);
+}
+
+*::-webkit-scrollbar-thumb {
+  border: 2px solid var(--tp-scrollbar-track);
+  border-radius: var(--tp-radius-pill);
+  background: var(--tp-scrollbar-thumb);
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--tp-scrollbar-thumb-hover);
+}
+
+@media (max-width: 768px) {
+  body.tp-app nav,
+  body.tp-app main {
+    padding-left: var(--tp-space-4);
+    padding-right: var(--tp-space-4);
+  }
+
+  body.tp-app main {
+    padding-top: var(--tp-space-6);
+    padding-bottom: var(--tp-space-8);
+  }
+}

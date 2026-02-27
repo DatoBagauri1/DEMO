@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% load static planner_extras %}
+
+{% block title %}TriPPlanner | Airport Departure Planner{% endblock %}
+
+{% block content %}
+<section
+  class="relative isolate overflow-hidden rounded-[2.5rem] bg-slate-950 px-8 py-16 shadow-2xl sm:px-16 sm:py-24 lg:p-20"
+>
+  <div class="absolute inset-0 -z-10"
+       x-data="{
+         idx: 0,
+         images: [{% for img in hero_images %}'{% if img|is_external %}{{ img }}{% else %}{% static img %}{% endif %}'{% if not forloop.last %}, {% endif %}{% endfor %}],
+         tick() { this.idx = (this.idx + 1) % this.images.length; }
+       }"
+       x-init="setInterval(() => tick(), 5000)">
+    <template x-for="(img, i) in images" :key="i">
+      <img :src="img" 
+           x-show="idx === i" 
+           x-transition.opacity.duration.1500ms 
+           alt="Destination hero" 
+           class="absolute inset-0 h-full w-full object-cover opacity-40 mix-blend-luminosity tp-hero-image">
+    </template>
+    <div class="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-900/80 to-slate-900/40"></div>
+    <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent"></div>
+  </div>
+
+  <div class="mx-auto grid max-w-7xl gap-16 lg:grid-cols-2 lg:items-center">
+    <div class="max-w-2xl space-y-8">
+      <div class="inline-flex items-center gap-2 rounded-full border border-blue-500/30 bg-blue-500/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-blue-300 backdrop-blur-md">
+        <span class="relative flex h-2 w-2">
+          <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-blue-400 opacity-75"></span>
+          <span class="relative inline-flex h-2 w-2 rounded-full bg-blue-500"></span>
+        </span>
+        Live Flight + Hotel Packaging
+      </div>
+      
+      <h1 class="text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl lg:leading-[1.1]">
+        Plan airport-to-airport trips with <span class="bg-gradient-to-r from-blue-400 to-cyan-300 bg-clip-text text-transparent">ranked estimates</span> and outbound links.
+      </h1>
+      
+      <p class="text-lg leading-relaxed text-slate-300">
+        TriPPlanner compares destination cities, estimates package ranges, explains the score, and sends you to partner sites for flights, hotels, and activities.
+      </p>
+      
+      <div class="flex flex-wrap items-center gap-4 pt-4">
+        {% if request.user.is_authenticated %}
+          <a href="{% url 'planner:wizard' %}" class="group relative inline-flex items-center justify-center overflow-hidden rounded-xl bg-white px-8 py-4 font-bold text-slate-900 transition-all hover:scale-[1.02] hover:bg-slate-50 hover:shadow-[0_0_40px_-10px_rgba(255,255,255,0.3)] focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-slate-900">
+            Start Planning
+            <svg class="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+          </a>
+        {% else %}
+          <a href="{% url 'signup' %}" class="group relative inline-flex items-center justify-center overflow-hidden rounded-xl bg-blue-600 px-8 py-4 font-bold text-white transition-all hover:scale-[1.02] hover:bg-blue-500 hover:shadow-[0_0_40px_-10px_rgba(59,130,246,0.5)] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-slate-900">
+            Create Free Account
+          </a>
+          <a href="{% url 'login' %}" class="inline-flex rounded-xl border border-white/20 bg-white/5 px-8 py-4 font-bold text-white backdrop-blur-md transition-all hover:bg-white/10 hover:text-white focus:outline-none focus:ring-2 focus:ring-white/50 focus:ring-offset-2 focus:ring-offset-slate-900">
+            Login
+          </a>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="grid gap-5 sm:grid-cols-2">
+      <div class="group rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:bg-white/10 hover:shadow-2xl hover:shadow-blue-500/10">
+        <svg class="mb-4 h-8 w-8 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+        <p class="text-xs font-semibold uppercase tracking-wider text-blue-300">Transparent Ranking</p>
+        <p class="mt-2 text-lg font-bold text-white">Price + convenience + quality</p>
+      </div>
+      <div class="group rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:bg-white/10 hover:shadow-2xl hover:shadow-blue-500/10">
+        <svg class="mb-4 h-8 w-8 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+        <p class="text-xs font-semibold uppercase tracking-wider text-blue-300">Links-Only Engine</p>
+        <p class="mt-2 text-lg font-bold text-white">No checkout, no booking writes</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="mx-auto mt-10 grid max-w-4xl gap-6">
+
+</section>
+
+<p class="mt-8 text-center text-xs text-ink/55">
+  Made by Baga with VIBECODING
+</p>
+{% endblock %}

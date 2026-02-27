@@ -1,0 +1,67 @@
+﻿{
+  "distance_bands_km": [
+    {"band": "short", "max_km": 900, "flight_min": 120, "flight_max": 320, "travel_time_hours": 2.2, "nonstop_likelihood": 0.9},
+    {"band": "medium", "max_km": 2800, "flight_min": 260, "flight_max": 680, "travel_time_hours": 5.0, "nonstop_likelihood": 0.72},
+    {"band": "long", "max_km": 6200, "flight_min": 520, "flight_max": 1250, "travel_time_hours": 9.0, "nonstop_likelihood": 0.45},
+    {"band": "ultra_long", "max_km": 30000, "flight_min": 850, "flight_max": 1900, "travel_time_hours": 14.0, "nonstop_likelihood": 0.25}
+  ],
+  "hotel_tiers": {
+    "budget": {"nightly_min": 45, "nightly_max": 110, "star_rating": 3.0, "guest_rating": 7.3},
+    "standard": {"nightly_min": 80, "nightly_max": 190, "star_rating": 3.6, "guest_rating": 8.0},
+    "premium": {"nightly_min": 145, "nightly_max": 340, "star_rating": 4.2, "guest_rating": 8.5},
+    "luxury": {"nightly_min": 260, "nightly_max": 620, "star_rating": 4.7, "guest_rating": 9.0}
+  },
+  "season_multipliers": {
+    "1": 0.9,
+    "2": 0.9,
+    "3": 0.96,
+    "4": 1.0,
+    "5": 1.08,
+    "6": 1.15,
+    "7": 1.2,
+    "8": 1.18,
+    "9": 1.03,
+    "10": 0.99,
+    "11": 0.94,
+    "12": 1.04
+  },
+  "country_defaults": {
+    "AU": {"tier": "premium", "tags": ["beach", "nature", "food"], "nonstop_likelihood": 0.42},
+    "BR": {"tier": "standard", "tags": ["beach", "nightlife", "nature", "food"], "nonstop_likelihood": 0.38},
+    "CA": {"tier": "premium", "tags": ["nature", "culture", "food", "quiet"], "nonstop_likelihood": 0.58},
+    "DE": {"tier": "premium", "tags": ["culture", "food", "quiet"], "nonstop_likelihood": 0.62},
+    "ES": {"tier": "premium", "tags": ["beach", "culture", "food", "nightlife"], "nonstop_likelihood": 0.64},
+    "FR": {"tier": "premium", "tags": ["culture", "food", "nightlife"], "nonstop_likelihood": 0.66},
+    "GB": {"tier": "premium", "tags": ["culture", "food", "nightlife"], "nonstop_likelihood": 0.69},
+    "GR": {"tier": "standard", "tags": ["beach", "culture", "food", "quiet"], "nonstop_likelihood": 0.5},
+    "IT": {"tier": "premium", "tags": ["culture", "food", "beach", "nightlife"], "nonstop_likelihood": 0.61},
+    "JP": {"tier": "premium", "tags": ["culture", "food", "nightlife", "quiet"], "nonstop_likelihood": 0.47},
+    "MX": {"tier": "standard", "tags": ["beach", "food", "nightlife", "culture"], "nonstop_likelihood": 0.56},
+    "NL": {"tier": "premium", "tags": ["culture", "nightlife", "food"], "nonstop_likelihood": 0.71},
+    "PT": {"tier": "standard", "tags": ["beach", "culture", "food", "quiet"], "nonstop_likelihood": 0.59},
+    "TH": {"tier": "budget", "tags": ["beach", "food", "nightlife", "nature"], "nonstop_likelihood": 0.36},
+    "US": {"tier": "premium", "tags": ["nature", "culture", "nightlife", "food"], "nonstop_likelihood": 0.74}
+  },
+  "airport_overrides": {
+    "CDG": {"tier": "premium", "tags": ["culture", "food", "nightlife"]},
+    "NCE": {"tier": "premium", "tags": ["beach", "food", "quiet"]},
+    "LHR": {"tier": "premium", "tags": ["culture", "nightlife", "food"]},
+    "ATH": {"tier": "standard", "tags": ["beach", "culture", "food"]},
+    "JTR": {"tier": "luxury", "tags": ["beach", "quiet", "culture"]},
+    "HND": {"tier": "premium", "tags": ["culture", "food", "nightlife", "quiet"]},
+    "KIX": {"tier": "standard", "tags": ["culture", "food", "nightlife"]},
+    "CUN": {"tier": "standard", "tags": ["beach", "nightlife", "food"]},
+    "LIS": {"tier": "standard", "tags": ["culture", "food", "beach"]},
+    "BKK": {"tier": "budget", "tags": ["food", "nightlife", "culture"]},
+    "HKT": {"tier": "standard", "tags": ["beach", "nightlife", "nature"]},
+    "JFK": {"tier": "luxury", "tags": ["culture", "food", "nightlife"]},
+    "LAX": {"tier": "premium", "tags": ["beach", "culture", "nightlife"]},
+    "MIA": {"tier": "premium", "tags": ["beach", "nightlife", "food"]},
+    "LAS": {"tier": "premium", "tags": ["nightlife", "food"]},
+    "BCN": {"tier": "premium", "tags": ["beach", "culture", "food", "nightlife"]},
+    "MAD": {"tier": "premium", "tags": ["culture", "food", "nightlife"]},
+    "FCO": {"tier": "premium", "tags": ["culture", "food"]},
+    "VCE": {"tier": "luxury", "tags": ["culture", "quiet", "food"]},
+    "AMS": {"tier": "premium", "tags": ["culture", "nightlife", "food"]}
+  }
+}

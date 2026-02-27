@@ -1,0 +1,193 @@
+{% extends "base.html" %}
+{% load planner_extras %}
+
+{% block title %}Package {{ package.rank }} | TriPPlanner{% endblock %}
+
+{% block content %}
+<section class="rounded-3xl border border-ink/10 bg-white p-6 shadow-sm">
+  <div class="flex flex-wrap items-start justify-between gap-4">
+    <div>
+      <p class="text-xs font-semibold uppercase tracking-wider text-ink/50">
+        {{ package.candidate.airport_code }} · {{ package.candidate.city_name }}, {{ package.candidate.country_code }}
+      </p>
+      <h1 class="mt-1 text-3xl font-extrabold">Package {{ package.rank }} · {{ package.total_price|money:package.currency }}</h1>
+      <p class="mt-2 text-sm text-ink/70">
+        Links-only package detail page. View component links on partner sites; no checkout on TriPPlanner.
+      </p>
+    </div>
+    <div class="flex gap-2">
+      <a href="{% url 'planner:share' plan.public_token %}" class="rounded-xl border border-ink/15 bg-white px-4 py-2 text-sm font-semibold hover:bg-sky/30">Back to results</a>
+      {% if plan.user_id and request.user.is_authenticated and request.user.id == plan.user_id %}
+        <a href="{% url 'planner:results' plan.id %}" class="rounded-xl bg-ink px-4 py-2 text-sm font-semibold text-white hover:bg-ocean">Owner view</a>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<section class="mt-4 grid gap-4 lg:grid-cols-[1.2fr_1fr]">
+  <article class="rounded-2xl border border-ink/10 bg-white p-5 shadow-sm">
+    <h2 class="text-sm font-semibold uppercase tracking-wide text-ink/60">Exact Component Links</h2>
+    {% with comp=package.component_summary %}
+      <div class="mt-3 space-y-3">
+        <div class="rounded-xl border border-ink/10 bg-sky/10 p-3">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <p class="text-sm font-semibold">{{ comp.flight.title|default:package.flight_option.origin_airport }}{% if comp.flight.title %}{% else %} to {{ package.flight_option.destination_airport }}{% endif %}</p>
+              <p class="text-xs text-ink/60">
+                Flight · {{ package.flight_option.duration_minutes|duration_hm }} · {{ package.flight_option.stops }} stop{{ package.flight_option.stops|pluralize }}
+                · {% if comp.flight.fallback_search|default:False or comp.flight.link_type|default:package.flight_option.link_type != "item" %}Search results link{% else %}Specific item link{% endif %}
+              </p>
+              {% if comp.flight.rationale %}<p class="mt-1 text-xs text-ink/60">{{ comp.flight.rationale }}</p>{% endif %}
+            </div>
+            <a
+              href="{{ comp.flight.outbound_url|default:package.flight_url|default:package.flight_option.deeplink_url }}"
+              target="_blank"
+              rel="noopener"
+              class="tp-button track-click rounded-lg border border-ink/15 bg-white px-3 py-2 text-xs font-semibold hover:bg-sky/30"
+              data-provider="{{ comp.flight.provider|default:package.flight_option.provider }}"
+              data-link-type="flight"
+              data-destination="{{ package.candidate.city_name }}-{{ package.candidate.country_code }}"
+              data-correlation-id="{{ package.plan_id }}:{{ package.id }}:detail:flight"
+              data-plan-id="{{ package.plan_id }}"
+              data-package-id="{{ package.id }}"
+            >View Flight</a>
+          </div>
+        </div>
+
+        <div class="rounded-xl border border-ink/10 bg-sky/10 p-3">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <p class="text-sm font-semibold">{{ comp.hotel.title|default:package.hotel_option.name }}</p>
+              <p class="text-xs text-ink/60">
+                Hotel · {{ package.hotel_option.star_rating|default:0 }}★ · Guest {{ package.hotel_option.guest_rating|default:0 }}
+                · {% if comp.hotel.fallback_search|default:False or comp.hotel.link_type|default:package.hotel_option.link_type != "item" %}Search results link{% else %}Specific item link{% endif %}
+              </p>
+              {% if comp.hotel.rationale %}<p class="mt-1 text-xs text-ink/60">{{ comp.hotel.rationale }}</p>{% endif %}
+            </div>
+            <a
+              href="{{ comp.hotel.outbound_url|default:package.hotel_url|default:package.hotel_option.deeplink_url }}"
+              target="_blank"
+              rel="noopener"
+              class="tp-button track-click rounded-lg border border-ink/15 bg-white px-3 py-2 text-xs font-semibold hover:bg-sky/30"
+              data-provider="{{ comp.hotel.provider|default:package.hotel_option.provider }}"
+              data-link-type="hotel"
+              data-destination="{{ package.candidate.city_name }}-{{ package.candidate.country_code }}"
+              data-correlation-id="{{ package.plan_id }}:{{ package.id }}:detail:hotel"
+              data-plan-id="{{ package.plan_id }}"
+              data-package-id="{{ package.id }}"
+            >View Hotel</a>
+          </div>
+        </div>
+
+        <div class="rounded-xl border border-ink/10 bg-sky/10 p-3">
+          <div class="flex items-center justify-between">
+            <p class="text-sm font-semibold">Optional add-ons (0-3 tours)</p>
+            {% if comp.tours %}
+              <span class="text-xs text-ink/60">{{ comp.tours|length }} attached</span>
+            {% endif %}
+          </div>
+          <div class="mt-2 space-y-2">
+            {% for tour in comp.tours|default:package.tour_entities|slice:":3" %}
+              <div class="rounded-lg border border-ink/10 bg-white px-2 py-2">
+                <div class="flex items-start justify-between gap-2">
+                  <div>
+                    <p class="text-xs font-semibold">{{ tour.title|default:tour.name }}</p>
+                    <p class="text-[11px] text-ink/60">
+                      {% if tour.fallback_search|default:False or tour.link_type|default:"search" != "item" %}Search results link{% else %}Specific item link{% endif %}
+                      {% if tour.price and tour.price != "0.00" and tour.price != "0" %} · {{ tour.currency|default:package.currency }} {{ tour.price }}{% endif %}
+                    </p>
+                    {% if tour.rationale %}<p class="mt-1 text-[11px] text-ink/60">{{ tour.rationale }}</p>{% endif %}
+                  </div>
+                  {% if tour.outbound_url or tour.link %}
+                    <a
+                      href="{{ tour.outbound_url|default:tour.link }}"
+                      target="_blank"
+                      rel="noopener"
+                      class="tp-button track-click text-xs font-semibold text-ocean"
+                      data-provider="{{ tour.provider|default:'travelpayouts' }}"
+                      data-link-type="tour"
+                      data-destination="{{ package.candidate.city_name }}-{{ package.candidate.country_code }}"
+                      data-correlation-id="{{ package.plan_id }}:{{ package.id }}:detail:tour:{{ forloop.counter }}"
+                      data-plan-id="{{ package.plan_id }}"
+                      data-package-id="{{ package.id }}"
+                    >View Tour</a>
+                  {% endif %}
+                </div>
+              </div>
+            {% empty %}
+              <p class="text-xs text-ink/60">No tour options attached. Use the package’s tours search fallback from results.</p>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    {% endwith %}
+  </article>
+
+  <article class="rounded-2xl border border-ink/10 bg-white p-5 shadow-sm">
+    <h2 class="text-sm font-semibold uppercase tracking-wide text-ink/60">Price Breakdown</h2>
+    {% with breakdown=package.price_breakdown %}
+      <div class="mt-3 space-y-2 text-sm">
+        <div class="flex items-center justify-between"><span>Flight total</span><strong>{{ breakdown.flight_total|default:package.flight_option.total_price|money:package.currency }}</strong></div>
+        <div class="flex items-center justify-between"><span>Hotel total</span><strong>{{ breakdown.hotel_total|default:package.hotel_option.total_price|money:package.currency }}</strong></div>
+        {% with tours_optional=breakdown.optional_tours_total|default:"0.00" %}
+          <div class="flex items-center justify-between {% if tours_optional == '0.00' or tours_optional == '0' %}opacity-40{% endif %}">
+            <span>Optional tours (excluded)</span>
+            <strong>{{ tours_optional|money:package.currency }}</strong>
+          </div>
+        {% endwith %}
+        <div class="flex items-center justify-between text-ink/60"><span>Fees / variance</span><strong>{{ breakdown.fees_variance|default:"0.00"|money:package.currency }}</strong></div>
+        <div class="mt-2 border-t border-ink/10 pt-2 flex items-center justify-between text-base"><span class="font-semibold">Package total</span><strong>{{ breakdown.package_total|default:package.total_price|money:package.currency }}</strong></div>
+      </div>
+    {% endwith %}
+
+    <h3 class="mt-6 text-sm font-semibold uppercase tracking-wide text-ink/60">Why Ranked</h3>
+    <ul class="mt-3 space-y-2 text-xs text-ink/70">
+      {% for note in package.score_breakdown.why_ranked|default:package.explanations %}
+        <li>• {{ note }}</li>
+      {% endfor %}
+    </ul>
+
+    <h3 class="mt-6 text-sm font-semibold uppercase tracking-wide text-ink/60">Key Signals</h3>
+    <div class="mt-3 grid gap-2 text-xs text-ink/70">
+      <div class="rounded-lg border border-ink/10 bg-sky/10 px-2 py-2">Duration: {{ package.flight_option.duration_minutes|duration_hm }}</div>
+      <div class="rounded-lg border border-ink/10 bg-sky/10 px-2 py-2">Stops: {{ package.flight_option.stops }}</div>
+      <div class="rounded-lg border border-ink/10 bg-sky/10 px-2 py-2">Hotel rating: {{ package.hotel_option.star_rating|default:0 }}★ / guest {{ package.hotel_option.guest_rating|default:0 }}</div>
+      <div class="rounded-lg border border-ink/10 bg-sky/10 px-2 py-2">Data confidence: {{ package.data_confidence|floatformat:2 }}</div>
+    </div>
+  </article>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  (function () {
+    function getCookie(name) {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop().split(';').shift();
+      return '';
+    }
+    const csrfToken = getCookie('csrftoken');
+    document.body.addEventListener('click', function (event) {
+      const link = event.target.closest('.track-click');
+      if (!link) return;
+      fetch('/api/click', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json', 'X-CSRFToken': csrfToken},
+        body: JSON.stringify({
+          provider: link.dataset.provider || 'unknown',
+          link_type: link.dataset.linkType || 'other',
+          destination: link.dataset.destination || '',
+          correlation_id: link.dataset.correlationId || '',
+          plan_id: link.dataset.planId || null,
+          package_id: link.dataset.packageId || null,
+          outbound_url: link.href
+        }),
+        keepalive: true
+      }).catch(() => {});
+    });
+  })();
+</script>
+{% endblock %}
+
+

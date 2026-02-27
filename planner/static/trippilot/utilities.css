@@ -1,0 +1,181 @@
+/* TriPPlanner utility classes and variable-driven Tailwind color bridges */
+
+.tp-muted {
+  color: rgb(var(--tp-color-muted-rgb) / 0.92);
+}
+
+.tp-text-gradient {
+  color: transparent;
+  background: var(--tp-gradient-primary);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+.tp-stack-sm > * + * {
+  margin-top: var(--tp-space-2);
+}
+
+.tp-stack-md > * + * {
+  margin-top: var(--tp-space-4);
+}
+
+.tp-stack-lg > * + * {
+  margin-top: var(--tp-space-6);
+}
+
+.tp-grid-auto {
+  display: grid;
+  gap: var(--tp-space-4);
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+}
+
+.tp-hover-lift {
+  transition:
+    transform var(--tp-duration-normal) var(--tp-ease-emphasis),
+    box-shadow var(--tp-duration-fast) var(--tp-ease-standard);
+}
+
+.tp-hover-lift:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--tp-shadow-lg);
+}
+
+.tp-soft-divider {
+  border-top: 1px solid rgb(var(--tp-color-ink-rgb) / 0.09);
+}
+
+.tp-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+.tp-fade-in {
+  animation: tp-fade-in var(--tp-duration-slow) var(--tp-ease-standard) both;
+}
+
+.tp-slide-up {
+  animation: tp-slide-up var(--tp-duration-slow) var(--tp-ease-emphasis) both;
+}
+
+@keyframes tp-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes tp-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Variable-driven bridges for existing Tailwind utility color classes */
+.text-ink {
+  color: var(--tp-color-ink);
+}
+
+.text-ocean {
+  color: var(--tp-color-ocean);
+}
+
+.text-mint {
+  color: var(--tp-color-mint);
+}
+
+.bg-sand {
+  background-color: var(--tp-color-sand);
+}
+
+.bg-ink {
+  background-color: var(--tp-color-ink);
+}
+
+.bg-ocean {
+  background-color: var(--tp-color-ocean);
+}
+
+.bg-sky {
+  background-color: var(--tp-color-sky);
+}
+
+.border-ink\/10 {
+  border-color: rgb(var(--tp-color-ink-rgb) / 0.1);
+}
+
+.border-ink\/15 {
+  border-color: rgb(var(--tp-color-ink-rgb) / 0.15);
+}
+
+.border-ink\/20 {
+  border-color: rgb(var(--tp-color-ink-rgb) / 0.2);
+}
+
+.border-sky\/40 {
+  border-color: rgb(var(--tp-color-sky-rgb) / 0.4);
+}
+
+.bg-white\/70 {
+  background-color: rgb(var(--tp-color-surface-rgb) / 0.7);
+}
+
+.bg-white\/80 {
+  background-color: rgb(var(--tp-color-surface-rgb) / 0.8);
+}
+
+.bg-white\/95 {
+  background-color: rgb(var(--tp-color-surface-rgb) / 0.95);
+}
+
+.bg-sky\/30 {
+  background-color: rgb(var(--tp-color-sky-rgb) / 0.3);
+}
+
+.bg-sky\/40 {
+  background-color: rgb(var(--tp-color-sky-rgb) / 0.4);
+}
+
+.bg-mint\/20 {
+  background-color: rgb(var(--tp-color-mint-rgb) / 0.2);
+}
+
+.text-ink\/60 {
+  color: rgb(var(--tp-color-ink-rgb) / 0.6);
+}
+
+.text-ink\/70 {
+  color: rgb(var(--tp-color-ink-rgb) / 0.7);
+}
+
+.text-ink\/80 {
+  color: rgb(var(--tp-color-ink-rgb) / 0.8);
+}
+
+.text-ink\/55 {
+  color: rgb(var(--tp-color-ink-rgb) / 0.55);
+}
+
+.hover\:bg-sky\/30:hover {
+  background-color: rgb(var(--tp-color-sky-rgb) / 0.32);
+}
+
+.hover\:bg-ocean:hover {
+  background-color: rgb(var(--tp-color-ocean-rgb) / 0.9);
+}
+
+.hover\:bg-ink:hover {
+  background-color: rgb(var(--tp-color-ink-rgb) / 0.95);
+}

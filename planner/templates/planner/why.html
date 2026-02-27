@@ -1,0 +1,285 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Why Choose Our Service | TriPPlanner{% endblock %}
+
+{% block content %}
+<div class="why-page space-y-8">
+  <section class="why-hero relative overflow-hidden rounded-[2rem] border border-white/10 p-6 shadow-2xl sm:p-10">
+    <div class="why-hero__bg"></div>
+    {% if why_images %}
+      <div class="why-hero__media" data-why-hero-slider>
+        {% for image in why_images|slice:":6" %}
+          <img
+            src="{% static image %}"
+            alt="Travel inspiration {{ forloop.counter }}"
+            class="why-hero__slide{% if forloop.first %} is-active{% endif %}"
+            data-why-slide
+            loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
+          >
+        {% endfor %}
+      </div>
+    {% endif %}
+    <div class="relative z-10 grid gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
+      <div class="space-y-5">
+        <p class="why-kicker">Why Choose Our Service</p>
+        <h1 class="text-3xl font-extrabold leading-tight text-white sm:text-4xl lg:text-5xl">
+          Turn travel comparison chaos into clear, ranked, <span class="why-hero__emphasis">links-only packages</span>.
+        </h1>
+        <p class="max-w-2xl text-sm leading-7 text-slate-200 sm:text-base">
+          TriPPlanner fixes the biggest trip-planning frustration: spending hours comparing flights, hotels, and tours across multiple sites while prices move and totals stop matching. We assemble real package options, explain the ranking, and give you outbound links so you can book anywhere you want.
+        </p>
+        <div class="flex flex-wrap gap-3">
+          <a href="{% url 'planner:wizard' %}" class="why-cta why-cta--primary">New Search</a>
+          <a href="{% url 'planner:landing' %}" class="why-cta why-cta--secondary">Back to Home</a>
+          {% if not request.user.is_authenticated %}
+            <a href="{% url 'login' %}" class="why-cta why-cta--ghost">Login to Planner</a>
+          {% endif %}
+        </div>
+        <div class="grid gap-3 sm:grid-cols-3">
+          <div class="why-stat">
+            <span class="why-stat__label">Links-only</span>
+            <span class="why-stat__value">No checkout</span>
+          </div>
+          <div class="why-stat">
+            <span class="why-stat__label">Explainable</span>
+            <span class="why-stat__value">Rank reasons shown</span>
+          </div>
+          <div class="why-stat">
+            <span class="why-stat__label">Flexible</span>
+            <span class="why-stat__value">Book anywhere</span>
+          </div>
+        </div>
+      </div>
+
+      <aside class="why-panel">
+        <h2 class="why-panel__title">What TriPPlanner fixes</h2>
+        <ul class="why-panel__list">
+          <li>People waste hours comparing flights, hotels, and tours across multiple sites.</li>
+          <li>Prices change constantly, so manual comparison becomes confusing fast.</li>
+          <li>Hidden fees, mismatched dates, and unclear value distort decisions.</li>
+          <li>Overwhelming search pages hide better curated choices.</li>
+          <li>Trust is weak when ranking logic and checkout incentives are hidden.</li>
+        </ul>
+      </aside>
+    </div>
+  </section>
+
+  <section class="why-surface rounded-[1.5rem] border border-white/10 p-6 sm:p-8">
+    <div class="flex flex-wrap items-end justify-between gap-4">
+      <div>
+        <h2 class="why-section-title">What makes TriPPlanner better</h2>
+        <p class="why-section-subtitle">
+          We focus on decision quality first, not locking you into a booking flow.
+        </p>
+      </div>
+      <span class="why-chip">Links-only packages • transparent ranking • outbound freedom</span>
+    </div>
+    <div class="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+      {% for benefit in why_benefits %}
+        <article class="why-card">
+          <div class="why-card__icon" aria-hidden="true">{{ benefit.icon }}</div>
+          <h3 class="why-card__title">{{ benefit.title }}</h3>
+          <p class="why-card__body">{{ benefit.body }}</p>
+        </article>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="why-surface rounded-[1.5rem] border border-white/10 p-6 sm:p-8">
+    <div class="grid gap-8 lg:grid-cols-[1fr_1fr]">
+      <div>
+        <h2 class="why-section-title">How it works</h2>
+        <p class="why-section-subtitle">
+          A fast decision layer for airport-to-airport planning with transparent outputs.
+        </p>
+        <ol class="why-timeline">
+          {% for step in why_steps %}
+            <li class="why-timeline__item">
+              <span class="why-timeline__index">{{ forloop.counter }}</span>
+              <div class="why-timeline__content">{{ step }}</div>
+            </li>
+          {% endfor %}
+        </ol>
+      </div>
+
+      <div class="space-y-5">
+        <article class="why-panel why-panel--light">
+          <h3 class="why-panel__title">Links-only packages (what that means)</h3>
+          <p class="why-copy">
+            TriPPlanner does not process bookings. We rank packages and provide outbound affiliate links. You keep control over the final booking site, account, and purchase decision.
+          </p>
+          <p class="why-copy">
+            We emphasize curated options over giant search result pages, and when a search-link fallback is used, we label it clearly instead of pretending it is a specific bookable item.
+          </p>
+        </article>
+
+        <article class="why-panel why-panel--danger">
+          <h3 class="why-panel__title">What we don’t do</h3>
+          <ul class="why-panel__list">
+            <li>No booking engine</li>
+            <li>No payments</li>
+            <li>No reservations</li>
+          </ul>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="why-surface rounded-[1.5rem] border border-white/10 p-6 sm:p-8">
+    <div class="grid gap-8 lg:grid-cols-[1fr_1fr]">
+      <div>
+        <h2 class="why-section-title">Who it’s for</h2>
+        <p class="why-section-subtitle">
+          Built for travelers who want clarity before they commit.
+        </p>
+        <ul class="why-bullet-list">
+          {% for item in why_audiences %}
+            <li>{{ item }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+
+      <div>
+        <h2 class="why-section-title">Privacy & Safety</h2>
+        <p class="why-section-subtitle">
+          Transparent by design, with links-only boundaries and outbound validation.
+        </p>
+        <div class="why-card-stack">
+          <article class="why-card why-card--compact">
+            <h3 class="why-card__title">Outbound domain validation</h3>
+            <p class="why-card__body">Saved and tracked outbound links are validated with the app’s allowlist and only `http/https` schemes are accepted.</p>
+          </article>
+          <article class="why-card why-card--compact">
+            <h3 class="why-card__title">Click tracking for analytics, not checkout</h3>
+            <p class="why-card__body">TriPPlanner tracks outbound clicks for performance and product analytics, but does not operate a payment flow.</p>
+          </article>
+          <article class="why-card why-card--compact">
+            <h3 class="why-card__title">No payment data stored</h3>
+            <p class="why-card__body">There is no in-app payment step, so TriPPlanner does not store payment card details.</p>
+          </article>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="why-surface rounded-[1.5rem] border border-white/10 p-6 sm:p-8">
+    <div class="flex flex-wrap items-end justify-between gap-4">
+      <div>
+        <h2 class="why-section-title">Traveler feedback</h2>
+        <p class="why-section-subtitle">
+          Example quotes that reflect how people use a links-only planner.
+        </p>
+      </div>
+    </div>
+    <div class="mt-6 grid gap-4 lg:grid-cols-3">
+      {% for item in why_testimonials %}
+        <blockquote class="why-quote">
+          <p class="why-quote__text">“{{ item.quote }}”</p>
+          <footer class="why-quote__footer">— {{ item.person }}</footer>
+        </blockquote>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="why-surface rounded-[1.5rem] border border-white/10 p-6 sm:p-8">
+    <div class="flex flex-wrap items-end justify-between gap-4">
+      <div>
+        <h2 class="why-section-title">World gallery</h2>
+      </div>
+    </div>
+
+    {% if why_images %}
+      <div class="why-gallery mt-6">
+        {% for image in why_images %}
+          <figure class="why-gallery__item">
+            <img src="{% static image %}" alt="Travel destination {{ forloop.counter }}" loading="lazy">
+          </figure>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="why-gallery why-gallery--empty mt-6">
+        {% for _ in "12345"|make_list %}
+          <div class="why-gallery__placeholder">
+            <span>Why image placeholder</span>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </section>
+
+  <section class="why-surface rounded-[1.5rem] border border-white/10 p-6 sm:p-8">
+    <div class="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+      <div>
+        <h2 class="why-section-title">FAQ</h2>
+        <p class="why-section-subtitle">
+          Straight answers about links-only packages, booking responsibility, and transparency.
+        </p>
+        <div class="why-faq-list" data-why-faq-root>
+          {% for faq in why_faqs %}
+            <article class="why-faq-item">
+              <button type="button" class="why-faq-item__trigger" data-why-faq-trigger aria-expanded="false" aria-controls="why-faq-{{ forloop.counter }}">
+                <span>{{ faq.q }}</span>
+                <span class="why-faq-item__plus" aria-hidden="true">+</span>
+              </button>
+              <div id="why-faq-{{ forloop.counter }}" class="why-faq-item__panel" data-why-faq-panel hidden>
+                <p>{{ faq.a }}</p>
+              </div>
+            </article>
+          {% endfor %}
+        </div>
+      </div>
+
+      <aside class="why-final-cta">
+        <p class="why-kicker">Ready to compare smarter?</p>
+        <h3 class="why-final-cta__title">Use TriPPlanner as your travel decision layer.</h3>
+        <p class="why-copy">
+          Get curated, explainable, links-only package options and keep full control of where you book.
+        </p>
+        <div class="mt-4 flex flex-col gap-3">
+          <a href="{% url 'planner:wizard' %}" class="why-cta why-cta--primary why-cta--block">New Search</a>
+          <a href="{% url 'planner:landing' %}" class="why-cta why-cta--secondary why-cta--block">See Homepage</a>
+        </div>
+      </aside>
+    </div>
+  </section>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  (function () {
+    const faqRoot = document.querySelector('[data-why-faq-root]');
+    if (faqRoot) {
+      faqRoot.addEventListener('click', function (event) {
+        const trigger = event.target.closest('[data-why-faq-trigger]');
+        if (!trigger) return;
+        const item = trigger.closest('.why-faq-item');
+        const panel = item ? item.querySelector('[data-why-faq-panel]') : null;
+        const expanded = trigger.getAttribute('aria-expanded') === 'true';
+
+        faqRoot.querySelectorAll('[data-why-faq-trigger]').forEach((btn) => btn.setAttribute('aria-expanded', 'false'));
+        faqRoot.querySelectorAll('[data-why-faq-panel]').forEach((el) => { el.hidden = true; });
+
+        if (!expanded && panel) {
+          trigger.setAttribute('aria-expanded', 'true');
+          panel.hidden = false;
+        }
+      });
+    }
+
+    const slider = document.querySelector('[data-why-hero-slider]');
+    if (slider) {
+      const slides = Array.from(slider.querySelectorAll('[data-why-slide]'));
+      if (slides.length > 1) {
+        let idx = 0;
+        setInterval(function () {
+          slides[idx].classList.remove('is-active');
+          idx = (idx + 1) % slides.length;
+          slides[idx].classList.add('is-active');
+        }, 4200);
+      }
+    }
+  })();
+</script>
+{% endblock %}

@@ -1,0 +1,292 @@
+{% extends "base.html" %}
+
+{% block title %}Planner Wizard | TriPPlanner{% endblock %}
+
+{% block content %}
+<section class="mb-6">
+  <h1 class="text-3xl font-extrabold text-black">Airport-to-Airport Departure Planner</h1>
+  <p class="mt-2 text-sm text-black">
+    Build links-only plans from your origin airport to one or more destination airports with concrete item offers.
+  </p>
+</section>
+
+{% if not providers.travelpayouts_enabled or not providers.travelpayouts_token_configured %}
+  <div class="tp-alert mb-6 rounded-2xl border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900">
+    Travelpayouts token is not configured. Planner will use deterministic estimates and still return tracked outbound links.
+  </div>
+{% endif %}
+{% if not providers.links_only_enabled %}
+  <div class="tp-alert mb-6 rounded-2xl border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900">
+    TRIPPILOT_LINKS_ONLY is disabled. This deployment is designed for links-only mode; enable it for production.
+  </div>
+{% endif %}
+{% if not providers.fx_enabled %}
+  <div class="tp-alert mb-6 rounded-2xl border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900">
+    FX not configured. Ranking still works with 1:1 fallback conversion.
+  </div>
+{% endif %}
+
+<form method="post" x-data="{ step: 1 }" class="wizard-form space-y-6" novalidate>
+  {% csrf_token %}
+  <input type="hidden" name="idempotency_key" value="{{ idempotency_key }}">
+
+  <div class="wizard-stepper grid gap-3 rounded-2xl border border-ink/10 bg-white p-4 text-xs font-semibold uppercase tracking-wider text-ink/50 sm:grid-cols-3">
+    <button type="button" @click="step = 1" :class="step===1 ? 'text-ink' : ''">1. Route & Dates</button>
+    <button type="button" @click="step = 2" :class="step===2 ? 'text-ink' : ''">2. Travelers</button>
+    <button type="button" @click="step = 3" :class="step===3 ? 'text-ink' : ''">3. Filters & Preferences</button>
+  </div>
+
+  <section x-show="step === 1" x-transition class="grid gap-4 rounded-3xl border border-ink/10 bg-white p-6 shadow-sm sm:grid-cols-2">
+    <div class="sm:col-span-2">
+      <input type="hidden" id="id_search_mode" name="search_mode" value="direct">
+      <div class="rounded-xl border border-ink/10 bg-sky/10 px-3 py-2 text-xs font-semibold text-ink">
+        Direct destination mode only
+      </div>
+      <p class="mt-1 text-xs text-ink/60">Add one or more destination airports to compare packages.</p>
+    </div>
+
+    <div class="relative">
+      <label class="mb-1 block text-sm font-semibold" for="id_origin_iata">Origin airport (IATA)</label>
+      <input id="id_origin_iata" name="origin_iata" type="text" maxlength="3" value="{{ form.origin_iata.value|default:'' }}" class="tp-input rounded-xl border border-ink/10 px-3 py-2 uppercase" placeholder="e.g. TBS" autocomplete="off" required>
+      <div id="origin-suggest" class="absolute z-20 mt-1 hidden w-full rounded-xl border border-ink/10 bg-white p-1 shadow-lg"></div>
+      {% if form.origin_iata.errors %}<p class="mt-1 text-xs text-rose-600">{{ form.origin_iata.errors|striptags }}</p>{% endif %}
+    </div>
+
+    <div class="relative">
+      <label class="mb-1 block text-sm font-semibold" for="id_destination_iata">Destination airport (IATA)</label>
+      <div class="flex flex-wrap gap-2 sm:flex-nowrap">
+        <input id="id_destination_iata" name="destination_iata" type="text" maxlength="3" value="{{ form.destination_iata.value|default:'' }}" class="tp-input rounded-xl border border-ink/10 px-3 py-2 uppercase" placeholder="e.g. JFK" autocomplete="off">
+        <button id="add-destination-btn" type="button" class="tp-button rounded-xl border border-ink/20 bg-white px-3 py-2 text-xs font-semibold">Add</button>
+      </div>
+      <div id="destination-suggest" class="absolute z-20 mt-1 hidden w-full rounded-xl border border-ink/10 bg-white p-1 shadow-lg"></div>
+      <p class="mt-1 text-xs text-ink/60">You can add multiple destination airports.</p>
+      {% if form.destination_iata.errors %}<p class="mt-1 text-xs text-rose-600">{{ form.destination_iata.errors|striptags }}</p>{% endif %}
+    </div>
+
+    <div class="sm:col-span-2">
+      <input id="id_destination_iatas_text" name="destination_iatas_text" type="hidden" value="{{ form.destination_iatas_text.value|default:'' }}">
+      <div id="destination-chip-list" class="flex flex-wrap gap-2"></div>
+    </div>
+
+    <input id="id_destination_country" name="destination_country" type="hidden" value="">
+
+    <div>
+      <label class="mb-1 block text-sm font-semibold" for="id_currency">Currency</label>
+      <input id="id_currency" name="currency" type="text" maxlength="3" value="{{ form.currency.value|default:'USD' }}" class="tp-input rounded-xl border border-ink/10 px-3 py-2 uppercase">
+    </div>
+
+    <div>
+      <label class="mb-1 block text-sm font-semibold" for="id_departure_date_from">Departure window start</label>
+      <input id="id_departure_date_from" name="departure_date_from" type="date" value="{{ form.departure_date_from.value|default:'' }}" class="tp-input rounded-xl border border-ink/10 px-3 py-2" required>
+      {% if form.departure_date_from.errors %}<p class="mt-1 text-xs text-rose-600">{{ form.departure_date_from.errors|striptags }}</p>{% endif %}
+    </div>
+
+    <div>
+      <label class="mb-1 block text-sm font-semibold" for="id_departure_date_to">Departure window end</label>
+      <input id="id_departure_date_to" name="departure_date_to" type="date" value="{{ form.departure_date_to.value|default:'' }}" class="tp-input rounded-xl border border-ink/10 px-3 py-2" required>
+      {% if form.departure_date_to.errors %}<p class="mt-1 text-xs text-rose-600">{{ form.departure_date_to.errors|striptags }}</p>{% endif %}
+    </div>
+
+    <div>
+      <label class="mb-1 block text-sm font-semibold" for="id_trip_length_min">Trip length min (days)</label>
+      <input id="id_trip_length_min" name="trip_length_min" type="number" min="1" max="30" value="{{ form.trip_length_min.value|default:4 }}" class="tp-input rounded-xl border border-ink/10 px-3 py-2">
+    </div>
+
+    <div>
+      <label class="mb-1 block text-sm font-semibold" for="id_trip_length_max">Trip length max (days)</label>
+      <input id="id_trip_length_max" name="trip_length_max" type="number" min="1" max="45" value="{{ form.trip_length_max.value|default:8 }}" class="tp-input rounded-xl border border-ink/10 px-3 py-2">
+      {% if form.trip_length_max.errors %}<p class="mt-1 text-xs text-rose-600">{{ form.trip_length_max.errors|striptags }}</p>{% endif %}
+    </div>
+  </section>
+
+  <section x-show="step === 2" x-transition class="grid gap-4 rounded-3xl border border-ink/10 bg-white p-6 shadow-sm sm:grid-cols-2">
+    <div>
+      <label class="mb-1 block text-sm font-semibold" for="id_adults">Adults</label>
+      <input id="id_adults" name="adults" type="number" min="1" max="9" value="{{ form.adults.value|default:2 }}" class="tp-input rounded-xl border border-ink/10 px-3 py-2" required>
+      {% if form.adults.errors %}<p class="mt-1 text-xs text-rose-600">{{ form.adults.errors|striptags }}</p>{% endif %}
+    </div>
+
+    <div>
+      <label class="mb-1 block text-sm font-semibold" for="id_children">Children</label>
+      <input id="id_children" name="children" type="number" min="0" max="9" value="{{ form.children.value|default:0 }}" class="tp-input rounded-xl border border-ink/10 px-3 py-2">
+      {% if form.children.errors %}<p class="mt-1 text-xs text-rose-600">{{ form.children.errors|striptags }}</p>{% endif %}
+    </div>
+
+  </section>
+
+  <section x-show="step === 3" x-transition class="grid gap-4 rounded-3xl border border-ink/10 bg-white p-6 shadow-sm sm:grid-cols-2">
+    <div>
+      <label class="mb-1 block text-sm font-semibold" for="id_flight_max_stops">Flight max stops</label>
+      <div class="rounded-xl border border-ink/10 px-3 py-2">{{ form.flight_max_stops }}</div>
+    </div>
+    <div>
+      <label class="mb-1 block text-sm font-semibold" for="id_flight_max_duration_minutes">Flight max duration (minutes)</label>
+      <div class="rounded-xl border border-ink/10 px-3 py-2">{{ form.flight_max_duration_minutes }}</div>
+    </div>
+    <div>
+      <label class="mb-1 block text-sm font-semibold" for="id_hotel_stars_min">Hotel stars minimum</label>
+      <div class="rounded-xl border border-ink/10 px-3 py-2">{{ form.hotel_stars_min }}</div>
+    </div>
+    <div>
+      <label class="mb-1 block text-sm font-semibold" for="id_hotel_guest_rating_min">Hotel guest rating minimum</label>
+      <div class="rounded-xl border border-ink/10 px-3 py-2">{{ form.hotel_guest_rating_min }}</div>
+    </div>
+    <div class="sm:col-span-2">
+      <label class="mb-1 block text-sm font-semibold">Amenities</label>
+      <div class="grid gap-2 rounded-xl border border-ink/10 px-3 py-3 sm:grid-cols-3">{{ form.hotel_amenities }}</div>
+    </div>
+    <div class="sm:col-span-2">
+      <label class="mb-1 block text-sm font-semibold">Preferences (weight = 1.0)</label>
+      <div class="grid gap-2 rounded-xl border border-ink/10 px-3 py-3 sm:grid-cols-3">{{ form.preferences }}</div>
+    </div>
+  </section>
+
+  {% if form.non_field_errors %}
+    <div class="tp-alert rounded-xl border border-rose-300 bg-rose-50 p-3 text-sm text-rose-700">{{ form.non_field_errors|striptags }}</div>
+  {% endif %}
+
+  <div class="wizard-footer flex items-center justify-between gap-3">
+    <button type="button" @click="step = Math.max(1, step - 1)" class="tp-button rounded-xl border border-ink/20 bg-white px-5 py-3 font-semibold hover:bg-sky/30">Back</button>
+    <div class="wizard-next-submit flex gap-3">
+      <button type="button" @click="step = Math.min(3, step + 1)" class="tp-button rounded-xl border border-ink/20 bg-white px-5 py-3 font-semibold hover:bg-sky/30">Next</button>
+      <button type="submit" class="tp-button tp-button-primary rounded-xl bg-ink px-6 py-3 font-semibold text-white hover:bg-ocean">Start Links-Only Search</button>
+    </div>
+  </div>
+</form>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  (function () {
+    function debounce(fn, delay) {
+      let timeout = null;
+      return function () {
+        const args = arguments;
+        clearTimeout(timeout);
+        timeout = setTimeout(() => fn.apply(this, args), delay);
+      };
+    }
+
+    function setupAirportAutocomplete(inputId, panelId, onSelect) {
+      const input = document.getElementById(inputId);
+      const panel = document.getElementById(panelId);
+      if (!input || !panel) return;
+
+      function hidePanel() {
+        panel.classList.add('hidden');
+        panel.innerHTML = '';
+      }
+
+      const render = debounce(function () {
+        const query = (input.value || '').trim();
+        if (query.length < 1) {
+          hidePanel();
+          return;
+        }
+
+        fetch(`/api/airports/search?q=${encodeURIComponent(query)}&limit=8`)
+          .then((response) => response.json())
+          .then((payload) => {
+            const results = payload.results || [];
+            if (!results.length) {
+              hidePanel();
+              return;
+            }
+
+            panel.innerHTML = results.map((item) => `
+              <button type="button" class="block w-full rounded-lg px-3 py-2 text-left text-xs hover:bg-sky/30" data-iata="${item.iata}">
+                <span class="font-semibold">${item.iata}</span>
+                <span class="text-ink/70"> - ${item.display_name}</span>
+              </button>
+            `).join('');
+            panel.classList.remove('hidden');
+
+            panel.querySelectorAll('button[data-iata]').forEach((button) => {
+              button.addEventListener('click', function () {
+                input.value = this.dataset.iata || '';
+                hidePanel();
+                if (onSelect) onSelect(this.dataset.iata || '');
+              });
+            });
+          })
+          .catch(() => {
+            hidePanel();
+          });
+      }, 220);
+
+      input.addEventListener('input', render);
+      input.addEventListener('blur', function () {
+        setTimeout(hidePanel, 150);
+      });
+    }
+
+    const destinationInput = document.getElementById('id_destination_iata');
+    const destinationHidden = document.getElementById('id_destination_iatas_text');
+    const destinationChipList = document.getElementById('destination-chip-list');
+    const addDestinationBtn = document.getElementById('add-destination-btn');
+    let selectedDestinations = [];
+
+    function syncDestinationHidden() {
+      if (destinationHidden) {
+        destinationHidden.value = selectedDestinations.join(',');
+      }
+    }
+
+    function renderDestinationChips() {
+      if (!destinationChipList) return;
+      destinationChipList.innerHTML = '';
+      selectedDestinations.forEach((code) => {
+        const chip = document.createElement('button');
+        chip.type = 'button';
+        chip.className = 'tp-chip rounded-full bg-mint/20 px-2 py-1 text-xs font-semibold text-ink';
+        chip.textContent = `${code} \u00D7`;
+        chip.addEventListener('click', function () {
+          selectedDestinations = selectedDestinations.filter((item) => item !== code);
+          syncDestinationHidden();
+          renderDestinationChips();
+        });
+        destinationChipList.appendChild(chip);
+      });
+    }
+
+    function addDestination(code) {
+      const normalized = (code || '').trim().toUpperCase();
+      if (!normalized || normalized.length !== 3) return;
+      if (!selectedDestinations.includes(normalized)) {
+        selectedDestinations.push(normalized);
+      }
+      syncDestinationHidden();
+      renderDestinationChips();
+      if (destinationInput) destinationInput.value = normalized;
+    }
+
+    if (destinationHidden && destinationHidden.value) {
+      destinationHidden.value.split(',').forEach((item) => {
+        const code = (item || '').trim().toUpperCase();
+        if (code && code.length === 3 && !selectedDestinations.includes(code)) {
+          selectedDestinations.push(code);
+        }
+      });
+      renderDestinationChips();
+    }
+
+    setupAirportAutocomplete('id_origin_iata', 'origin-suggest');
+    setupAirportAutocomplete('id_destination_iata', 'destination-suggest', addDestination);
+
+    if (addDestinationBtn) {
+      addDestinationBtn.addEventListener('click', function () {
+        if (destinationInput) addDestination(destinationInput.value);
+      });
+    }
+
+    const wizardForm = document.querySelector('form[method="post"]');
+    if (wizardForm) {
+      wizardForm.addEventListener('submit', function () {
+        if (destinationInput?.value) {
+          addDestination(destinationInput.value);
+        }
+      });
+    }
+  })();
+</script>
+{% endblock %}

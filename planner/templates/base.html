@@ -1,0 +1,92 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}TriPPlanner{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Manrope:wght@400;500;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ink: '#12263A',
+            ocean: '#1B4965',
+            mint: '#5FA8A6',
+            sky: '#CAE9FF',
+            sand: '#FFF7E8'
+          }
+        }
+      }
+    }
+  </script>
+  <script src="https://unpkg.com/htmx.org@1.9.12"></script>
+  <script defer src="https://unpkg.com/alpinejs@3.14.8/dist/cdn.min.js"></script>
+  <link rel="stylesheet" href="{% static 'css/full.css' %}">
+  <link rel="stylesheet" href="{% static 'trippilot/app.css' %}">
+</head>
+<body class="tp-app bg-sand text-ink min-h-screen">
+  <div class="min-h-screen bg-[radial-gradient(circle_at_15%_25%,#ffffff_0%,#f7fbff_40%,#f5f1e8_100%)]">
+    <header class="tp-header border-b border-sky/40 bg-white/80 backdrop-blur">
+      <nav x-data="{ open: false }" class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-6 py-4">
+        <div class="flex w-full items-center justify-between md:w-auto">
+          <a href="{% url 'planner:landing' %}" class="text-2xl font-extrabold tracking-tight">TriPPlanner</a>
+          <button
+            type="button"
+            class="tp-nav-toggle inline-flex items-center justify-center rounded-xl border border-ink/15 bg-white px-3 py-2 text-xs font-semibold md:hidden"
+            @click="open = !open"
+            :aria-expanded="open.toString()"
+            aria-label="Toggle navigation"
+          >Menu</button>
+        </div>
+        <div x-cloak class="tp-nav-links hidden w-full flex-col gap-2 text-sm font-medium md:flex md:w-auto md:flex-row md:items-center md:gap-3" :class="{ 'hidden': !open, 'flex': open }">
+          <a href="{% url 'planner:landing' %}" @click="open = false" class="rounded-xl border border-ink/10 bg-white px-4 py-2 text-ink hover:bg-ocean hover:text-white">Landing</a>
+          <a href="{% url 'planner:why' %}" @click="open = false" class="rounded-xl border border-ink/10 bg-white px-4 py-2 text-ink hover:bg-ocean hover:text-white">Our Service</a>
+          <a href="{% url 'planner:wizard' %}" @click="open = false" class="rounded-xl border border-ink/10 bg-white px-4 py-2 text-blue-400 hover:bg-ocean hover:text-white">Planner</a>
+          {% if request.user.is_authenticated %}
+            <a href="{% url 'profile' %}" @click="open = false" class="rounded-xl border border-ink/10 bg-white px-4 py-2 text-ink hover:bg-ocean hover:text-white">Profile</a>
+            <form action="{% url 'logout' %}" method="post" class="inline md:contents">
+              {% csrf_token %}
+              <button class="w-full rounded-xl border border-ink/10 bg-white px-4 py-2 text-ink hover:bg-ocean hover:text-white md:w-auto">Logout</button>
+            </form>
+          {% else %}
+            <a href="{% url 'login' %}" @click="open = false" class="rounded-xl border border-ink/10 bg-white px-4 py-2 text-ink hover:bg-ocean hover:text-white">Login</a>
+            <a href="{% url 'signup' %}" @click="open = false" class="rounded-xl border border-ink/10 bg-white px-4 py-2 text-ink hover:bg-ocean hover:text-white">Create Account</a>
+          {% endif %}
+        </div>
+      </nav>
+    </header>
+
+    <main class="tp-main-shell mx-auto max-w-7xl px-6 py-8">
+      {% if messages %}
+        <div class="mb-6 space-y-2">
+          {% for message in messages %}
+            <div class="tp-alert rounded-xl border border-mint/30 bg-white px-4 py-3 text-sm shadow-sm">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+      {% block content %}{% endblock %}
+    </main>
+
+    <footer class="mt-12 border-t border-sky/40 bg-white/70">
+      <div class="mx-auto max-w-7xl px-6 py-6 text-xs text-ink/70">
+        TriPPlanner is links-only: ranked package estimates with outbound affiliate links. No checkout or booking on TriPPlanner.
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    document.body.addEventListener('htmx:configRequest', function (event) {
+      const tokenElement = document.querySelector('[name=csrfmiddlewaretoken]');
+      if (tokenElement) {
+        event.detail.headers['X-CSRFToken'] = tokenElement.value;
+      }
+    });
+  </script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

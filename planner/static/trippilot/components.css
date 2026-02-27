@@ -1,0 +1,283 @@
+/* TriPPlanner reusable components + selector mapping for existing templates */
+
+/* Glass surfaces */
+.tp-surface-glass,
+:is(.bg-white\/70, .bg-white\/80, .bg-white\/95, .bg-white\/12) {
+  background: var(--tp-glass-bg);
+  border: 1px solid var(--tp-glass-border);
+  box-shadow: var(--tp-glass-highlight), var(--tp-shadow-sm);
+  backdrop-filter: blur(var(--tp-glass-blur));
+  -webkit-backdrop-filter: blur(var(--tp-glass-blur));
+}
+
+/* Card containers */
+.tp-card,
+:is(section, div, article, aside)[class*="rounded-3xl"][class*="bg-white"],
+:is(section, div, article, aside)[class*="rounded-2xl"][class*="bg-white"][class*="border"],
+#progress-panel,
+#package-cards > .grid > article {
+  border: 1px solid var(--tp-color-border);
+  border-radius: var(--tp-radius-2xl);
+  background: var(--tp-gradient-surface);
+  box-shadow: var(--tp-shadow-sm);
+}
+
+.tp-section {
+  border-radius: var(--tp-radius-3xl);
+}
+
+/* Header shell */
+.tp-header {
+  box-shadow: 0 1px 0 rgb(var(--tp-color-surface-rgb) / 0.8);
+}
+
+/* Package cards */
+.tp-package-card,
+#package-cards > .grid > article {
+  position: relative;
+  overflow: hidden;
+  transition:
+    transform var(--tp-duration-normal) var(--tp-ease-emphasis),
+    box-shadow var(--tp-duration-normal) var(--tp-ease-standard),
+    border-color var(--tp-duration-fast) var(--tp-ease-standard);
+}
+
+.tp-package-card::before,
+#package-cards > .grid > article::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 3px;
+  background: linear-gradient(
+    90deg,
+    rgb(var(--tp-color-sky-rgb) / 0.25),
+    rgb(var(--tp-color-mint-rgb) / 0.75),
+    rgb(var(--tp-color-ocean-rgb) / 0.65)
+  );
+}
+
+.tp-package-card:hover,
+#package-cards > .grid > article:hover {
+  transform: translateY(-4px);
+  border-color: var(--tp-color-border-strong);
+  box-shadow: var(--tp-shadow-hover);
+}
+
+#package-cards .rounded-xl[class*="bg-sky/20"] {
+  border: 1px solid rgb(var(--tp-color-sky-rgb) / 0.55);
+  background: linear-gradient(
+    155deg,
+    rgb(var(--tp-color-sky-rgb) / 0.35),
+    rgb(var(--tp-color-mint-rgb) / 0.21)
+  );
+}
+
+/* Buttons */
+.tp-button,
+:is(button, a.track-click, a[class*="rounded-xl"][class*="px-"], a[class*="rounded-lg"][class*="px-"]) {
+  --tp-button-bg: var(--tp-glass-bg-strong);
+  --tp-button-fg: var(--tp-color-ink);
+  --tp-button-border: var(--tp-color-border);
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--tp-space-2);
+  border: 1px solid var(--tp-button-border);
+  border-radius: var(--tp-radius-xl);
+  padding: 0.625rem 1rem;
+  font-family: var(--tp-font-body);
+  font-size: var(--tp-text-sm);
+  font-weight: 700;
+  line-height: 1;
+  text-decoration: none;
+  color: var(--tp-button-fg);
+  background: var(--tp-button-bg);
+  box-shadow: var(--tp-shadow-xs);
+  cursor: pointer;
+  transition:
+    transform var(--tp-duration-fast) var(--tp-ease-emphasis),
+    box-shadow var(--tp-duration-fast) var(--tp-ease-standard),
+    background var(--tp-duration-fast) var(--tp-ease-standard),
+    color var(--tp-duration-fast) var(--tp-ease-standard),
+    border-color var(--tp-duration-fast) var(--tp-ease-standard);
+}
+
+.tp-button:hover,
+:is(button, a.track-click, a[class*="rounded-xl"][class*="px-"], a[class*="rounded-lg"][class*="px-"]):hover {
+  transform: translateY(-2px);
+  box-shadow: var(--tp-shadow-md);
+}
+
+.tp-button:active,
+:is(button, a.track-click, a[class*="rounded-xl"][class*="px-"], a[class*="rounded-lg"][class*="px-"]):active {
+  transform: translateY(0);
+}
+
+.tp-button:focus-visible,
+:is(button, a.track-click, a[class*="rounded-xl"][class*="px-"], a[class*="rounded-lg"][class*="px-"]):focus-visible {
+  outline: 0;
+  box-shadow: var(--tp-shadow-sm), 0 0 0 4px var(--tp-focus-ring);
+}
+
+.tp-button-primary,
+:is(button[type="submit"], a[class*="bg-ink"], button[class*="bg-ink"], a[class*="bg-ocean"], button[class*="bg-ocean"]) {
+  --tp-button-bg: var(--tp-gradient-primary);
+  --tp-button-fg: var(--tp-color-on-brand);
+  --tp-button-border: rgb(var(--tp-color-ink-rgb) / 0.08);
+  background: var(--tp-gradient-primary);
+  color: var(--tp-color-on-brand);
+  border-color: transparent;
+}
+
+.tp-button:disabled,
+button:disabled {
+  opacity: 0.64;
+  box-shadow: none;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Chips and badges */
+.tp-chip,
+#package-cards span[class*="rounded-full"],
+span[class*="rounded-full"][class*="bg-mint/20"] {
+  display: inline-flex;
+  align-items: center;
+  border-radius: var(--tp-radius-pill);
+  border: 1px solid rgb(var(--tp-color-mint-rgb) / 0.38);
+  padding: 0.28rem 0.62rem;
+  font-size: var(--tp-text-xs);
+  font-weight: 700;
+  color: var(--tp-color-ink);
+  background: linear-gradient(
+    140deg,
+    rgb(var(--tp-color-mint-rgb) / 0.26),
+    rgb(var(--tp-color-sky-rgb) / 0.42)
+  );
+}
+
+.tp-badge,
+p[class*="text-xs"][class*="uppercase"][class*="tracking-wide"],
+p[class*="text-xs"][class*="uppercase"][class*="tracking-wider"] {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--tp-space-1);
+  border-radius: var(--tp-radius-pill);
+  border: 1px solid rgb(var(--tp-color-sky-rgb) / 0.7);
+  background: rgb(var(--tp-color-surface-rgb) / 0.42);
+  padding: 0.24rem 0.58rem;
+  color: rgb(var(--tp-color-ink-rgb) / 0.78);
+  letter-spacing: 0.05em;
+}
+
+/* Inputs */
+.tp-input,
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+select,
+textarea {
+  width: 100%;
+  border: 1px solid var(--tp-color-border);
+  border-radius: var(--tp-radius-lg);
+  padding: 0.66rem 0.82rem;
+  color: var(--tp-color-ink);
+  background: rgb(var(--tp-color-surface-rgb) / 0.86);
+  transition:
+    border-color var(--tp-duration-fast) var(--tp-ease-standard),
+    box-shadow var(--tp-duration-fast) var(--tp-ease-standard),
+    background var(--tp-duration-fast) var(--tp-ease-standard);
+}
+
+:is(input, select, textarea):focus-visible {
+  outline: 0;
+  border-color: rgb(var(--tp-color-ocean-rgb) / 0.5);
+  background: rgb(var(--tp-color-surface-rgb) / 0.96);
+  box-shadow: 0 0 0 4px var(--tp-focus-ring);
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+  accent-color: var(--tp-color-ocean);
+}
+
+/* Input wrappers used by existing templates */
+form .rounded-xl[class*="border-ink/10"] {
+  border-radius: var(--tp-radius-lg);
+  border-color: rgb(var(--tp-color-ink-rgb) / 0.15);
+  background: rgb(var(--tp-color-surface-rgb) / 0.7);
+  box-shadow: inset 0 1px 0 rgb(var(--tp-color-surface-rgb) / 0.75);
+}
+
+/* Alerts */
+.tp-alert,
+[class*="bg-amber-50"],
+[class*="bg-rose-50"] {
+  --tp-alert-rgb: var(--tp-color-info-rgb);
+  border: 1px solid rgb(var(--tp-alert-rgb) / 0.34);
+  border-radius: var(--tp-radius-xl);
+  background: linear-gradient(
+    130deg,
+    rgb(var(--tp-alert-rgb) / 0.18),
+    rgb(var(--tp-color-surface-rgb) / 0.88)
+  );
+  color: rgb(var(--tp-color-ink-rgb) / 0.9);
+  box-shadow: var(--tp-shadow-xs);
+}
+
+[class*="bg-amber-50"] {
+  --tp-alert-rgb: var(--tp-color-warning-rgb);
+}
+
+[class*="bg-rose-50"] {
+  --tp-alert-rgb: var(--tp-color-danger-rgb);
+}
+
+/* Skeleton loaders */
+.tp-skeleton,
+#package-cards .animate-pulse {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.tp-skeleton::after,
+#package-cards .animate-pulse::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 22%,
+    rgb(var(--tp-color-surface-rgb) / 0.6) 50%,
+    transparent 78%
+  );
+  transform: translateX(-120%);
+  animation: tp-skeleton-shimmer 1.5s linear infinite;
+}
+
+#package-cards .animate-pulse [class*="bg-sky/"] {
+  background: rgb(var(--tp-color-sky-rgb) / 0.46);
+}
+
+@keyframes tp-skeleton-shimmer {
+  100% {
+    transform: translateX(120%);
+  }
+}
+
+/* Detail and map surfaces */
+#package-cards details {
+  border: 1px solid rgb(var(--tp-color-ink-rgb) / 0.14);
+  border-radius: var(--tp-radius-lg);
+  background: rgb(var(--tp-color-surface-rgb) / 0.7);
+}
+
+#package-cards summary {
+  font-weight: 700;
+}
+
+.leaflet-map {
+  border: 1px solid rgb(var(--tp-color-ink-rgb) / 0.12);
+  border-radius: var(--tp-radius-lg);
+  box-shadow: inset 0 0 0 1px rgb(var(--tp-color-surface-rgb) / 0.4);
+}
