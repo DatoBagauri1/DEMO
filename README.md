@@ -143,18 +143,6 @@ Optional:
 5. `celery -A trip_pilot worker --loglevel=info`
 6. `celery -A trip_pilot beat --loglevel=info`
 
-## Docker
-
-```bash
-docker compose up --build
-```
-
-Then seed airports in the web container:
-
-```bash
-docker compose exec web python manage.py seed_airports
-```
-
 ## Security + Observability
 
 - Secrets are read from environment variables.

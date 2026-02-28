@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
-from urllib.parse import unquote, urlparse
 
+import dj_database_url
 from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -18,23 +18,6 @@ def env_bool(name: str, default: bool = False) -> bool:
 def env_list(name: str, default: str = "") -> list[str]:
     raw = os.getenv(name, default)
     return [item.strip() for item in raw.split(",") if item.strip()]
-
-
-def database_from_url(database_url: str) -> dict:
-    parsed = urlparse(database_url)
-    scheme = (parsed.scheme or "").lower()
-    if scheme not in {"postgres", "postgresql"}:
-        raise ValueError(f"Unsupported DATABASE_URL scheme: {scheme}")
-    return {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": unquote((parsed.path or "").lstrip("/")),
-        "USER": unquote(parsed.username or ""),
-        "PASSWORD": unquote(parsed.password or ""),
-        "HOST": parsed.hostname or "",
-        "PORT": str(parsed.port or "5432"),
-        "CONN_MAX_AGE": int(os.getenv("DB_CONN_MAX_AGE", "60")),
-        "CONN_HEALTH_CHECKS": True,
-    }
 
 
 DATABASE_URL = os.getenv("DATABASE_URL", "").strip()
@@ -77,7 +60,7 @@ ROOT_URLCONF = "trip_pilot.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / "planner" / "templates"],
+        "DIRS": [BASE_DIR / "templates", BASE_DIR / "planner" / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -92,17 +75,12 @@ TEMPLATES = [
 WSGI_APPLICATION = "trip_pilot.wsgi.application"
 ASGI_APPLICATION = "trip_pilot.asgi.application"
 
-if DATABASE_URL:
-    DATABASES = {"default": database_from_url(DATABASE_URL)}
-else:
-    sqlite_timeout_seconds = int(os.getenv("SQLITE_TIMEOUT_SECONDS", "30"))
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.sqlite3",
-            "NAME": BASE_DIR / "db.sqlite3",
-            "OPTIONS": {"timeout": sqlite_timeout_seconds},
-        }
-    }
+DATABASES = {
+    "default": dj_database_url.config(
+        default=os.getenv("DATABASE_URL", f"sqlite:///{(BASE_DIR / 'db.sqlite3').as_posix()}"),
+        conn_max_age=int(os.getenv("DB_CONN_MAX_AGE", "60")),
+    )
+}
 
 if REDIS_URL:
     CACHES = {
@@ -133,6 +111,7 @@ USE_TZ = True
 
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
+STATICFILES_DIRS = [BASE_DIR / "static"]
 STORAGES = {
     "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
     "staticfiles": {"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"},
@@ -173,8 +152,8 @@ REST_FRAMEWORK = {
     },
 }
 
-CELERY_BROKER_URL = (os.getenv("CELERY_BROKER_URL") or REDIS_URL).strip()
-CELERY_RESULT_BACKEND = (os.getenv("CELERY_RESULT_BACKEND") or REDIS_URL or "cache+memory://").strip()
+CELERY_BROKER_URL = os.getenv("REDIS_URL")
+CELERY_RESULT_BACKEND = os.getenv("REDIS_URL")
 CELERY_TASK_ALWAYS_EAGER = not bool(CELERY_BROKER_URL)
 CELERY_TASK_EAGER_PROPAGATES = True
 CELERY_TASK_ACKS_LATE = True

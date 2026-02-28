@@ -1,0 +1,42 @@
+Render Web Service Deployment (Minimal Input)
+=============================================
+
+Create a new Render **Web Service** from this repo.
+
+Only required UI inputs:
+
+Build Command
+-------------
+bash build.sh
+
+Start Command
+-------------
+gunicorn trip_pilot.wsgi:application --bind 0.0.0.0:$PORT
+
+Required Environment Variables
+------------------------------
+1. DJANGO_SECRET_KEY=<strong random string>
+2. DATABASE_URL=<Render Postgres connection string>
+3. REDIS_URL=<Render Redis connection string>
+4. DJANGO_DEBUG=false
+5. DJANGO_ALLOWED_HOSTS=.onrender.com
+6. DJANGO_CSRF_TRUSTED_ORIGINS=https://*.onrender.com
+
+
+- TRAVELPAYOUTS_API_TOKEN
+- TRAVELPAYOUTS_MARKER
+- FX_API_KEY
+- FX_API_URL
+
+Post-deploy checks
+------------------
+1. GET /healthz/ returns: ok
+2. Landing page loads
+3. Planner page loads
+4. Static files load
+
+Notes
+-----
+- `build.sh` runs install + collectstatic + migrate automatically.
+- Airports are auto-seeded after migrate if Airport table is empty.
+- Celery uses REDIS_URL for both broker and result backend.
